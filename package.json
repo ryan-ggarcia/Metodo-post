@@ -1,0 +1,24 @@
+{
+  "name": "metodo-post",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"   
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryan-ggarcia/Metodo-post.git"
+  },
+  "author": "Ryan Fidelis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryan-ggarcia/Metodo-post/issues"
+  },
+  "homepage": "https://github.com/ryan-ggarcia/Metodo-post#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
