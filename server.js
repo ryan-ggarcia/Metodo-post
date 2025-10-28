@@ -1,9 +1,13 @@
 import express from 'express'
 const app = express()
 const port = 3000
+var usuarios = []
+// preparando o servidor para tratar as informações vindas do corpo da requisição
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-    res.write(`
+    // menu 
+    res.send(`
             <html>
                 <head>
                     <meta charset="UTF-8">
@@ -46,7 +50,7 @@ app.get('/', (req, res) => {
         `)
 })
 
-app.get('/cadastros', (req,res)=>{
+app.get('/cadastros', (req, res) => {
     res.send(`
                  <html>
                 <head>
@@ -56,7 +60,7 @@ app.get('/cadastros', (req,res)=>{
                 </head>
                 <body>
                 <h1> Cadastro de Clientes</h1>
-                 <form class="row g-3 needs-validation" novalidate>
+                 <form method="POST" action="/adicionar" class="row g-3 needs-validation" novalidate>
                     <div class="col-md-4">
                         <label for="txt" class="form-label">Nome</label>
                         <!-- O atributo 'id' identifica um elemento html na pagina para o servidor --!>
@@ -69,7 +73,7 @@ app.get('/cadastros', (req,res)=>{
                     </div>
                     <div class="col-md-4">
                         <label for="txt" class="form-label">Sobrenome</label>
-                        <input type="text" class="form-control" id="sbNome" value="Otto" required>
+                        <input type="text" class="form-control" id="sbNome" name="sbNome" value="Otto" required>
                         <div class="invalid-feedback">
                         Preencha o sobrenome do usuario !
                         </div>
@@ -93,7 +97,7 @@ app.get('/cadastros', (req,res)=>{
                     </div>
                     <div class="col-md-3">
                         <label for="txt" class="form-label">UF</label>
-                        <select class="form-select" id="uf" name=""uf required>
+                        <select class="form-select" id="uf" name="uf" required>
                             <option selected disabled value="">Escolha</option>
                             <option value="AC">Acre</option>
                             <option value="AL">Alagoas</option>
@@ -140,32 +144,66 @@ app.get('/cadastros', (req,res)=>{
                     </div>
                 </form>
                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-                    <script>
-                    // Example starter JavaScript for disabling form submissions if there are invalid fields
-                        (() => {
-                        'use strict'
-
-                        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                        const forms = document.querySelectorAll('.needs-validation')
-
-                        // Loop over them and prevent submission
-                        Array.from(forms).forEach(form => {
-                            form.addEventListener('submit', event => {
-                            if (!form.checkValidity()) {
-                                event.preventDefault()
-                                event.stopPropagation()
-                            }
-
-                            form.classList.add('was-validated')
-                            }, false)
-                        })
-                        })()
-                    </script>
                 </body>
             </html>
         `)
 })
-
+app.post('/adicionar', (req, res) => {
+    const nome = req.body.nome
+    const sb = req.body.sbNome
+    const email = req.body.email
+    const cidade = req.body.cidade
+    const uf = req.body.uf
+    const cep = req.body.cep
+    usuarios.push({nome,sb,email,cidade,uf,cep}) // armazenando as informações coletadas do formualrio em uma variavel
+    res.redirect('/listaUsuarios') // redireciona o usuario para algum lugar
+})
+app.get('/listaUsuarios',(req,res)=>{
+    var conteudo = `
+        <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+                    <title>Minha Primeira Página</title>
+                </head>
+                <body>
+                <h1>Lista de Usuarios cadastrados</h1>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Nome Social</th>
+                            <th>Email</th>
+                            <th>Cidade</th>
+                            <th>UF</th>
+                            <th>CEP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    for(let i=0; i<usuarios.length; i++){
+        conteudo += `
+            <tr>
+                <td>${usuarios[i].nome}</td>
+                <td>${usuarios[i].sb}</td>
+                <td>${usuarios[i].email}</td>
+                <td>${usuarios[i].cidade}</td>
+                <td>${usuarios[i].uf}</td>
+                <td>${usuarios[i].cep}</td>
+            </tr>
+        `;
+    }
+    conteudo += `
+                    </tbody>
+                </table>
+                </div>
+                <a class="btn btn-danger" href="/cadastros">Voltar</a>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+            </body>
+        </html>
+    `;
+    res.send(conteudo);
+})
 app.listen(port, () => {
     console.log(`Servidor Online na porta: ${port}`)
 })
